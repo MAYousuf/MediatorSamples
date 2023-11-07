@@ -21,7 +21,7 @@ namespace AspNetCoreSample.Application;
 //    //}
 //}
 
-public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse, ValidationFailed>>
+public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>>
     where TRequest : IValidate // Constrained to IMessage, or constrain to IBaseCommand or any custom interface you've implemented
 {
     private readonly IValidator<TRequest> _validator;
@@ -31,14 +31,17 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
         _validator = validator;
     }
 
-    public async Task<Result<TResponse, ValidationFailed>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse, ValidationFailed>> next, CancellationToken cancellationToken)
+    public async Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            return new ValidationFailed(validationResult.Errors);
+            var res = new ValidationFailed(validationResult.Errors);
+            //return res;
+            return Result<TResponse>.Failure(validationResult.Errors.Select(x=>x.ErrorMessage).ToArray());
         }
 
         return await next();
     }
 }
+

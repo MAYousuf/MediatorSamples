@@ -27,10 +27,16 @@ public static class TodoApi
                     try
                     {
                         var addTodo = TodoItemMapper.MapAddTodoItem(todo);
-                        var result = await mediator.Send<Result<TodoItem,ValidationFailed>>(addTodo, cancellationToken);
+                        var result = await mediator.Send<Result<TodoItem>>(addTodo, cancellationToken);
                         //return Results.Ok(null);
                         //return Results.Ok(TodoItemMapper.MapTodoItem(result));
-                        return Results.Ok(TodoItemMapper.MapTodoItem(result.Value));
+                        //return Results.Ok(TodoItemMapper.MapTodoItem(result.Value));
+                        if (result.IsSuccess && result.Value != null)
+                            return Results.Ok(result.Value);
+                        else if (result.IsSuccess && result.Value == null)
+                            return Results.NotFound();
+                        else
+                            return Results.BadRequest(result.Errors);
                     }
                     catch (ValidationException ex)
                     {

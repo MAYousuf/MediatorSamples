@@ -25,6 +25,6 @@ public static class ServiceCollectionExtensions
         //return services
         //    .AddSingleton(typeof(IPipelineBehavior<,>), typeof(ErrorLoggingBehaviour<,>))
             //.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            .AddSingleton(typeof(IPipelineBehavior<AddTodoItemCommand, Result<TodoItem, ValidationFailed>>), typeof(ValidationBehaviour<AddTodoItemCommand, Result<TodoItem, ValidationFailed>>));
+            .AddSingleton(typeof(IPipelineBehavior<AddTodoItemCommand, Result<TodoItem>>), typeof(ValidationBehaviour<AddTodoItemCommand, TodoItem>));
     }
 }

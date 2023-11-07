@@ -15,7 +15,7 @@ public class AddTodoItemValidator : AbstractValidator<AddTodoItemCommand>
     }
 }
 
-public sealed record AddTodoItemCommand(string Title, string Text) : IRequest<Result<TodoItem, ValidationFailed>>, IValidate
+public sealed record AddTodoItemCommand(string Title, string Text) : IRequest<Result<TodoItem>>, IValidate
 {
     //public bool IsValid([NotNullWhen(false)] out ValidationError? error)
     //{
@@ -30,17 +30,17 @@ public sealed record AddTodoItemCommand(string Title, string Text) : IRequest<Re
     //}
 }
 
-public sealed class TodoItemCommandHandler : IRequestHandler<AddTodoItemCommand, Result<TodoItem, ValidationFailed>>
+public sealed class TodoItemCommandHandler : IRequestHandler<AddTodoItemCommand, Result<TodoItem>>
 {
     private readonly ITodoItemRepository _repository;
 
     public TodoItemCommandHandler(ITodoItemRepository repository) => _repository = repository;
 
-    public async Task<Result<TodoItem, ValidationFailed>> Handle(AddTodoItemCommand command, CancellationToken cancellationToken)
+    public async Task<Result<TodoItem>> Handle(AddTodoItemCommand command, CancellationToken cancellationToken)
     {
         var item = new TodoItem(Guid.NewGuid(), command.Title, command.Text, false);
 
-        return await _repository.AddItem(item, cancellationToken);
+         return Result<TodoItem>.Success(await _repository.AddItem(item, cancellationToken));
 
     }
 }
