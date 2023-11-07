@@ -15,28 +15,28 @@ public class AddTodoItemValidator : AbstractValidator<AddTodoItemCommand>
     }
 }
 
-public sealed record AddTodoItemCommand(string Title, string Text) : IRequest<TodoItem>, IValidate
+public sealed record AddTodoItemCommand(string Title, string Text) : IRequest<Result<TodoItem, ValidationFailed>>, IValidate
 {
-    public bool IsValid([NotNullWhen(false)] out ValidationError? error)
-    {
-        var validator = new AddTodoItemValidator();
-        var result = validator.Validate(this);
-        if (result.IsValid)
-            error = null;
-        else
-            error = new ValidationError(result.Errors.Select(e => e.ErrorMessage).ToArray());
+    //public bool IsValid([NotNullWhen(false)] out ValidationError? error)
+    //{
+    //    var validator = new AddTodoItemValidator();
+    //    var result = validator.Validate(this);
+    //    if (result.IsValid)
+    //        error = null;
+    //    else
+    //        error = new ValidationError(result.Errors.Select(e => e.ErrorMessage).ToArray());
 
-        return result.IsValid;
-    }
+    //    return result.IsValid;
+    //}
 }
 
-public sealed class TodoItemCommandHandler : IRequestHandler<AddTodoItemCommand, TodoItem>
+public sealed class TodoItemCommandHandler : IRequestHandler<AddTodoItemCommand, Result<TodoItem, ValidationFailed>>
 {
     private readonly ITodoItemRepository _repository;
 
     public TodoItemCommandHandler(ITodoItemRepository repository) => _repository = repository;
 
-    public async Task<TodoItem> Handle(AddTodoItemCommand command, CancellationToken cancellationToken)
+    public async Task<Result<TodoItem, ValidationFailed>> Handle(AddTodoItemCommand command, CancellationToken cancellationToken)
     {
         var item = new TodoItem(Guid.NewGuid(), command.Title, command.Text, false);
 

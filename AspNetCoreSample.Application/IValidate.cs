@@ -5,5 +5,5 @@ namespace AspNetCoreSample.Application;
 
 public interface IValidate : IRequest
 {
-    bool IsValid([NotNullWhen(false)] out ValidationError? error);
+    //bool IsValid([NotNullWhen(false)] out ValidationError? error);
 }

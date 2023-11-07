@@ -27,9 +27,10 @@ public static class TodoApi
                     try
                     {
                         var addTodo = TodoItemMapper.MapAddTodoItem(todo);
-                        var response = await mediator.Send<TodoItem>(addTodo, cancellationToken);
+                        var result = await mediator.Send<Result<TodoItem,ValidationFailed>>(addTodo, cancellationToken);
                         //return Results.Ok(null);
-                        return Results.Ok(TodoItemMapper.MapTodoItem(response));
+                        //return Results.Ok(TodoItemMapper.MapTodoItem(result));
+                        return Results.Ok(TodoItemMapper.MapTodoItem(result.Value));
                     }
                     catch (ValidationException ex)
                     {
@@ -50,7 +51,7 @@ public sealed record AddTodoItemDto(string Title, string Text);
 [Mapper]
 public static partial class TodoItemMapper
 {
-    public static partial TodoItemDto MapTodoItem(this TodoItem car);
+    public static partial TodoItemDto MapTodoItem(this TodoItem todo);
 
-    public static partial AddTodoItemCommand MapAddTodoItem(this AddTodoItemDto car);
+    public static partial AddTodoItemCommand MapAddTodoItem(this AddTodoItemDto todo);
 }
