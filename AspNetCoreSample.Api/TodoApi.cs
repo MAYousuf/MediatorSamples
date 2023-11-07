@@ -30,7 +30,10 @@ public static class TodoApi
                         var result = await mediator.Send<Result<TodoItem,ValidationFailed>>(addTodo, cancellationToken);
                         //return Results.Ok(null);
                         //return Results.Ok(TodoItemMapper.MapTodoItem(result));
-                        return Results.Ok(TodoItemMapper.MapTodoItem(result.Value));
+                        //return Results.Ok(TodoItemMapper.MapTodoItem(result.Value));
+                        return result.Match<IResult>(
+                            success => Results.Ok(success),
+                            failed => Results.BadRequest(failed.errors));
                     }
                     catch (ValidationException ex)
                     {
